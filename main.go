@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/bigpanther/warrant/warranty"
 	"github.com/gin-gonic/gin"
 )
 
 // Dummy database
-var warranties = map[string]warranty{
+var warranties = map[string]warranty.Warranty{
 
 	"1": {1, time.Now(), time.Now().Add(5 * time.Second * 86400), "Samsung", 10000},
 }
@@ -40,7 +41,7 @@ func warrantyByID(c *gin.Context) {
 }
 
 func createWarranty(c *gin.Context) {
-	w := warranty{}
+	w := warranty.Warranty{}
 	err := c.BindJSON(&w)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

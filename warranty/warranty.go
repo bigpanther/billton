@@ -1,8 +1,8 @@
-package main
+package warranty
 
 import "time"
 
-type warranty struct {
+type Warranty struct {
 	ID              int
 	TransactionDate time.Time
 	Expiry          time.Time

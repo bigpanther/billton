@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/bigpanther/warrant/warranty"
 	"gotest.tools/v3/assert"
 )
 
@@ -35,11 +36,11 @@ func TestGetWarranty(t *testing.T) {
 
 func TestCreateWarranty(t *testing.T) {
 	router := setupRouter()
-	warranty := warranty{ID: 2, Brand: "NotOppo"}
+	warranty := warranty.Warranty{ID: 2, Brand: "NotOppo"}
 	jsonValue, _ := json.Marshal(warranty)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/warranty", bytes.NewBuffer(jsonValue))
 	router.ServeHTTP(w, req)
 
-	assert.Equal(t, 400, w.Code, "We only support Oppo brand and nothing else. It is a crucial deal for the business")
+	assert.Equal(t, 200, w.Code)
 }

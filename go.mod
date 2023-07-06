@@ -1,4 +1,4 @@
-module github.com/bigpanther/warranty
+module github.com/bigpanther/warrant
 
 go 1.20
 
