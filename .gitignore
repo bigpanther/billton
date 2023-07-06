@@ -1,0 +1,7 @@
+db/*
+release/*
+warrant
+.DS_STORE*
+.vscode
+.idea
+migrations/schema.sql

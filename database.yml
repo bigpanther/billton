@@ -1,0 +1,10 @@
+dev:
+  dialect: "sqlite3"
+  options:
+    encoding: "utf8mb4_general_ci"
+  database: "db/dev.sqlite"
+test:
+  dialect: "sqlite3"
+  options:
+    encoding: "utf8mb4_general_ci"
+  database: "db/test.sqlite"
