@@ -7,13 +7,17 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
-	"github.com/bigpanther/warrant/warranty"
-	"gotest.tools/v3/assert"
+	"github.com/gin-gonic/gin"
+	"github.com/gofrs/uuid"
+
+	"github.com/bigpanther/warrant/models"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetWarrantyNotFound(t *testing.T) {
-	router := setupRouter()
+	router := initEngine()
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/warranty/2", nil)
@@ -24,7 +28,7 @@ func TestGetWarrantyNotFound(t *testing.T) {
 }
 
 func TestGetWarranty(t *testing.T) {
-	router := setupRouter()
+	router := initEngine()
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/warranty/1", nil)
@@ -35,12 +39,23 @@ func TestGetWarranty(t *testing.T) {
 }
 
 func TestCreateWarranty(t *testing.T) {
-	router := setupRouter()
-	warranty := warranty.Warranty{ID: 2, Brand: "NotOppo"}
+	router := initEngine()
+	warranty := models.Warranty{ID: uuid.UUID{}, BrandName: "Samsung", StoreName: "Costco",
+		TransactionTime: time.Now(), ExpiryTime: time.Now().Add(5 * time.Second * 86400),
+		Amount: 100000}
 	jsonValue, _ := json.Marshal(warranty)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/warranty", bytes.NewBuffer(jsonValue))
 	router.ServeHTTP(w, req)
-
+	retW := &models.Warranty{}
+	json.Unmarshal(w.Body.Bytes(), retW)
 	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, "Samsung", retW.BrandName)
+	assert.NotEqual(t, warranty.ID, retW.ID)
+}
+
+func initEngine() *gin.Engine {
+	db := models.Init()
+	router := setupRouter(db)
+	return router
 }
