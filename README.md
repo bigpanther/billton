@@ -30,7 +30,7 @@ make run-dev
 
 ## Test Warranty Creation
 
-From the terminal run
+Open a new terminal and  run
 
 ```
 curl --location 'http://localhost:8080/warranty' \
