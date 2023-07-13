@@ -41,8 +41,9 @@ func withDb(db *pop.Connection, f func(c *context.AppContext)) gin.HandlerFunc {
 
 func warrantyByID(c *context.AppContext) {
 	id := c.Params.ByName("id")
-	w, ok := warranties[id]
-	if !ok {
+	w := &warranty.Warranty{}
+	err := c.DB.Find(w, id)
+	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": fmt.Sprintf("id not found: %s", id),
 		})
