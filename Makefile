@@ -14,3 +14,6 @@ drop-dev:
 	GO_ENV=dev soda drop
 drop-test:
 	GO_ENV=test soda drop
+
+build:
+	GO_ENV=dev go build -o release/warrant -v .
