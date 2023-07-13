@@ -2,22 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
-	"time"
 
 	"github.com/bigpanther/warrant/context"
 	"github.com/bigpanther/warrant/models"
-	warranty "github.com/bigpanther/warrant/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gobuffalo/pop/v6"
-	"github.com/gofrs/uuid"
 )
-
-// Dummy database
-var warranties = map[string]warranty.Warranty{
-
-	"1": {ID: uuid.UUID{}, TransactionTime: time.Now(), ExpiryTime: time.Now().Add(5 * time.Second * 86400), BrandName: "Samsung", StoreName: "Costco", Amount: 10000},
-}
 
 func main() {
 	db := models.Init()
@@ -27,8 +19,9 @@ func main() {
 
 func setupRouter(db *pop.Connection) *gin.Engine {
 	r := gin.Default()
-	r.GET("/warranty/:id", withDb(db, warrantyByID))
-	r.POST("/warranty", withDb(db, createWarranty))
+	r.GET("/warranties/:id", withDb(db, warrantyByID))
+	r.POST("/warranties", withDb(db, createWarranty))
+	r.POST("/users", withDb(db, createUser))
 	return r
 }
 
@@ -41,24 +34,26 @@ func withDb(db *pop.Connection, f func(c *context.AppContext)) gin.HandlerFunc {
 
 func warrantyByID(c *context.AppContext) {
 	id := c.Params.ByName("id")
-	w := &warranty.Warranty{}
+	w := &models.Warranty{}
 	err := c.DB.Find(w, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": fmt.Sprintf("id not found: %s", id),
 		})
+		log.Println(err)
 		return
 	}
 	c.IndentedJSON(http.StatusOK, w)
 }
 
 func createWarranty(c *context.AppContext) {
-	w := &warranty.Warranty{}
+	w := &models.Warranty{}
 	err := c.BindJSON(w)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "error creating warranty",
 		})
+		log.Println(err)
 		return
 	}
 	verrs, err := c.DB.ValidateAndCreate(w)
@@ -66,13 +61,44 @@ func createWarranty(c *context.AppContext) {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "error saving warranty",
 		})
+		log.Println(err)
 		return
 	}
 	if verrs.HasAny() {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": verrs,
 		})
+		log.Println(verrs)
 		return
 	}
 	c.IndentedJSON(http.StatusOK, w)
+}
+
+func createUser(c *context.AppContext) {
+	u := &models.User{}
+	err := c.BindJSON(u)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "error creating user",
+		})
+		log.Println(err)
+		return
+	}
+	verrs, err := c.DB.ValidateAndCreate(u)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "error saving user",
+		})
+		log.Println(err)
+
+		return
+	}
+	if verrs.HasAny() {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": verrs,
+		})
+		log.Println(verrs)
+		return
+	}
+	c.IndentedJSON(http.StatusOK, u)
 }
