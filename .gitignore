@@ -5,3 +5,4 @@ warrant
 .vscode
 .idea
 migrations/schema.sql
+warranty_receipts
