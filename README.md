@@ -15,11 +15,37 @@ Add the following line in your `~/.zshrc`. In the terminal, run the following co
 grep 'export PATH=$PATH:$(go env GOPATH)/bin' ~/.zshrc || echo 'export PATH=$PATH:$(go env GOPATH)/bin' >> ~/.zshrc
 ```
 
+Clone this repository
+
+```
+git clone https://github.com/bigpanther/warrant.git
+```
+
+Open the code in `Visual Studio Code`
+
+
 Install the `soda` tool for database migrations
 
 ```bash
 go install -tags sqlite github.com/gobuffalo/pop/v6/soda@latest
 ```
+
+## Fetching latest code from Github (Terminal)
+
+```
+git checkout main
+git pull --rebase
+
+git checkout <your-branch>
+git rebase main
+
+# Make changes and commit the code
+
+# Push the changes to github
+git push origin <your-branch>
+```
+
+You can use the VSCode git extension to run the same steps from the UI instead of the terminal.
 
 ## run the program
 
