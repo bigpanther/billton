@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
+	"strings"
 
 	"github.com/bigpanther/warrant/context"
 	"github.com/bigpanther/warrant/models"
@@ -22,7 +24,7 @@ func setupRouter(db *pop.Connection) *gin.Engine {
 	r.MaxMultipartMemory = 8 << 20
 	r.GET("/warranties/:id", withDb(db, warrantyByID))
 	r.POST("/warranties", withDb(db, createWarranty))
-	r.POST("/warranty/:id/upload", withDb(db, addImage))
+	r.POST("/warranties/:id/upload", withDb(db, addImage))
 
 	r.POST("/users", withDb(db, createUser))
 	return r
@@ -76,6 +78,12 @@ func createWarranty(c *context.AppContext) {
 	}
 	c.IndentedJSON(http.StatusOK, w)
 }
+func isValidFilename(name string) bool {
+	if strings.HasSuffix(name, ".jpg") || strings.HasSuffix(name, ".jpeg") || strings.HasSuffix(name, ".png") {
+		return true
+	}
+	return false
+}
 
 func createUser(c *context.AppContext) {
 	u := &models.User{}
@@ -111,7 +119,7 @@ func addImage(c *context.AppContext) {
 	file, _ := c.FormFile("file")
 	log.Println(file.Filename)
 	id := c.Params.ByName("id")
-	w := &warranty.Warranty{}
+	w := &models.Warranty{}
 	err := c.DB.Find(w, id)
 
 	if err != nil {
@@ -121,8 +129,8 @@ func addImage(c *context.AppContext) {
 		return
 	}
 	fileName := string(file.Filename)
-	if fileName[len(fileName)-3:] == "jpg" || fileName[len(fileName)-4:] == "jpeg" || fileName[len(fileName)-3:] == "png" {
-		dst := "warranty_receipts/" + string(id) + ".jpg"
+	if isValidFilename(fileName) {
+		dst := "warranty_receipts/" + id + filepath.Ext(fileName)
 
 		// Upload the file to specific dst.
 		c.SaveUploadedFile(file, dst)
