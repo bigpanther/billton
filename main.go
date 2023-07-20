@@ -253,7 +253,7 @@ func addImage(c *context.AppContext) {
 		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
 	} else {
 		c.JSON(http.StatusNotFound, gin.H{
-			"message": fmt.Sprintf("Error: You can only upload a JPEG or PNG files"),
+			"message": "Error: You can only upload a JPEG or PNG files",
 		})
 		return
 	}
