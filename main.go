@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
+	"strings"
 
 	"github.com/bigpanther/warrant/context"
 	"github.com/bigpanther/warrant/models"
@@ -19,8 +21,11 @@ func main() {
 
 func setupRouter(db *pop.Connection) *gin.Engine {
 	r := gin.Default()
+	r.MaxMultipartMemory = 8 << 20
 	r.GET("/warranties/:id", withDb(db, warrantyByID))
 	r.POST("/warranties", withDb(db, createWarranty))
+	r.POST("/warranties/:id/upload", withDb(db, addImage))
+
 	r.POST("/users", withDb(db, createUser))
 	return r
 }
@@ -58,7 +63,7 @@ func createWarranty(c *context.AppContext) {
 	}
 	verrs, err := c.DB.ValidateAndCreate(w)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
+		c.JSON(http.StatusNotFound, gin.H{
 			"message": "error saving warranty",
 		})
 		log.Println(err)
@@ -72,6 +77,12 @@ func createWarranty(c *context.AppContext) {
 		return
 	}
 	c.IndentedJSON(http.StatusOK, w)
+}
+func isValidFilename(name string) bool {
+	if strings.HasSuffix(name, ".jpg") || strings.HasSuffix(name, ".jpeg") || strings.HasSuffix(name, ".png") {
+		return true
+	}
+	return false
 }
 
 func createUser(c *context.AppContext) {
@@ -101,4 +112,35 @@ func createUser(c *context.AppContext) {
 		return
 	}
 	c.IndentedJSON(http.StatusOK, u)
+}
+
+func addImage(c *context.AppContext) {
+
+	file, _ := c.FormFile("file")
+	log.Println(file.Filename)
+	id := c.Params.ByName("id")
+	w := &models.Warranty{}
+	err := c.DB.Find(w, id)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("id not found: %s", id),
+		})
+		return
+	}
+	fileName := string(file.Filename)
+	if isValidFilename(fileName) {
+		dst := "warranty_receipts/" + id + filepath.Ext(fileName)
+
+		// Upload the file to specific dst.
+		c.SaveUploadedFile(file, dst)
+
+		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
+	} else {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("Error: You can only upload a JPEG or PNG files"),
+		})
+		return
+	}
+
 }
