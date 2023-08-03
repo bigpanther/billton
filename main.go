@@ -66,8 +66,15 @@ func editWarranty(c *context.AppContext) {
 		log.Println(err)
 		return
 	}
-	err2 := c.BindJSON(w)
-	if err2 != nil {
+	w2 := &models.Warranty{}
+	err = c.BindJSON(w2)
+	fmt.Println(w2)
+	w.BrandName = w2.BrandName
+	w.StoreName = w2.StoreName
+	w.Amount = w2.Amount
+	w.TransactionTime = w2.TransactionTime
+	fmt.Println(w2)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "error updating warranty",
 		})
