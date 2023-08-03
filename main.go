@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -25,6 +26,7 @@ func setupRouter(db *pop.Connection) *gin.Engine {
 	r.GET("/warranties/:id", withDb(db, warrantyByID))
 	r.POST("/warranties", withDb(db, createWarranty))
 	r.POST("/warranties/:id/upload", withDb(db, addImage))
+	r.GET("/warranties/:id/download", withDb(db, getImage))
 
 	r.POST("/users", withDb(db, createUser))
 	return r
@@ -114,6 +116,35 @@ func createUser(c *context.AppContext) {
 	c.IndentedJSON(http.StatusOK, u)
 }
 
+func getImage(c *context.AppContext) {
+	w := &models.Warranty{}
+	download_path := "warranty_receipts/"
+	id := c.Params.ByName("id")
+	err := c.DB.Find(w, id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("id not found: %s", id),
+		})
+		log.Println(err)
+		return
+	}
+	_, error := os.Stat(string(id + ".jpg"))
+
+	// check if error is "file not exists"
+	if os.IsNotExist(error) {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("file does not exist for id: %s", id),
+		})
+		return
+	}
+	targetPath := download_path + id + ".jpg"
+	c.Header("Content-Description", "File Transfer")
+	c.Header("Content-Transfer-Encoding", "binary")
+	c.Header("Content-Disposition", "attachment; filename="+id)
+	c.Header("Content-Type", "application/octet-stream")
+	c.File(targetPath)
+
+}
 func addImage(c *context.AppContext) {
 
 	file, _ := c.FormFile("file")
