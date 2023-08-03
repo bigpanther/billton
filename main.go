@@ -26,6 +26,8 @@ func setupRouter(db *pop.Connection) *gin.Engine {
 	r.POST("/warranties", withDb(db, createWarranty))
 	r.POST("/warranties/:id/upload", withDb(db, addImage))
 
+	r.GET("/users/:id", withDb(db, usersByID))
+
 	r.POST("/users", withDb(db, createUser))
 	return r
 }
@@ -40,6 +42,20 @@ func withDb(db *pop.Connection, f func(c *context.AppContext)) gin.HandlerFunc {
 func warrantyByID(c *context.AppContext) {
 	id := c.Params.ByName("id")
 	w := &models.Warranty{}
+	err := c.DB.Find(w, id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("id not found: %s", id),
+		})
+		log.Println(err)
+		return
+	}
+	c.IndentedJSON(http.StatusOK, w)
+}
+
+func usersByID(c *context.AppContext) {
+	id := c.Params.ByName("id")
+	w := &models.User{}
 	err := c.DB.Find(w, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -95,6 +111,15 @@ func createUser(c *context.AppContext) {
 		log.Println(err)
 		return
 	}
+	if len(u.Name) < 5 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid Name",
+		})
+		log.Println(err)
+		return
+
+	}
+
 	verrs, err := c.DB.ValidateAndCreate(u)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
