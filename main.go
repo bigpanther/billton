@@ -31,6 +31,7 @@ func setupRouter(db *pop.Connection) *gin.Engine {
 
 	r.POST("/users", withDb(db, createUser))
 	r.PUT("/warranties/:id", withDb(db, editWarranty))
+	r.DELETE("/warranties/:id", withDb(db, deleteWarranty))
 	return r
 }
 
@@ -53,6 +54,32 @@ func warrantyByID(c *context.AppContext) {
 		return
 	}
 	c.IndentedJSON(http.StatusOK, w)
+}
+
+func deleteWarranty(c *context.AppContext) {
+	id := c.Params.ByName("id")
+	w := &models.Warranty{}
+	err := c.DB.Find(w, id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("id not found: %s", id),
+		})
+		log.Println(err)
+		return
+	}
+	err = c.DB.Destroy(w)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("Record cannot be deleted: %s", id),
+		})
+		log.Println(err)
+		return
+	}
+	//fmt.Println("Record successfully deleted")
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": fmt.Sprintf("Record successfully deleted: %s", id),
+	})
 }
 
 func editWarranty(c *context.AppContext) {
