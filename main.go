@@ -121,6 +121,7 @@ func getImage(c *context.AppContext) {
 	download_path := "warranty_receipts/"
 	id := c.Params.ByName("id")
 	err := c.DB.Find(w, id)
+	var targetPath string
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": fmt.Sprintf("id not found: %s", id),
@@ -128,16 +129,26 @@ func getImage(c *context.AppContext) {
 		log.Println(err)
 		return
 	}
-	_, error := os.Stat(string(id + ".jpg"))
-
+	_, error := os.Stat(string(download_path + id + ".jpg"))
+	_, error1 := os.Stat(string(download_path + id + ".jpeg"))
+	_, error2 := os.Stat(string(download_path + id + ".png"))
 	// check if error is "file not exists"
-	if os.IsNotExist(error) {
+	if os.IsNotExist(error) && os.IsNotExist(error1) && os.IsNotExist(error2) {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": fmt.Sprintf("file does not exist for id: %s", id),
 		})
 		return
 	}
-	targetPath := download_path + id + ".jpg"
+	if !os.IsNotExist(error) {
+		targetPath = download_path + id + ".jpg"
+	}
+	if !os.IsNotExist(error1) {
+		targetPath = download_path + id + ".jpeg"
+	}
+	if !os.IsNotExist(error2) {
+		targetPath = download_path + id + ".png"
+	}
+
 	c.Header("Content-Description", "File Transfer")
 	c.Header("Content-Transfer-Encoding", "binary")
 	c.Header("Content-Disposition", "attachment; filename="+id)
