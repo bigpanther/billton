@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -11,6 +13,7 @@ import (
 	"github.com/bigpanther/warrant/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gobuffalo/pop/v6"
+	"github.com/gofrs/uuid"
 )
 
 func main() {
@@ -25,8 +28,13 @@ func setupRouter(db *pop.Connection) *gin.Engine {
 	r.GET("/warranties/:id", withDb(db, warrantyByID))
 	r.POST("/warranties", withDb(db, createWarranty))
 	r.POST("/warranties/:id/upload", withDb(db, addImage))
+	r.GET("/warranties/:id/download", withDb(db, getImage))
+
+
 
 	r.POST("/users", withDb(db, createUser))
+	r.PUT("/warranties/:id", withDb(db, editWarranty))
+	r.DELETE("/warranties/:id", withDb(db, deleteWarranty))
 	return r
 }
 
@@ -51,9 +59,79 @@ func warrantyByID(c *context.AppContext) {
 	c.IndentedJSON(http.StatusOK, w)
 }
 
+func deleteWarranty(c *context.AppContext) {
+	id := c.Params.ByName("id")
+	w := &models.Warranty{}
+	err := c.DB.Find(w, id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("id not found: %s", id),
+		})
+		log.Println(err)
+		return
+	}
+	err = c.DB.Destroy(w)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("Record cannot be deleted: %s", id),
+		})
+		log.Println(err)
+		return
+	}
+	//fmt.Println("Record successfully deleted")
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": fmt.Sprintf("Record successfully deleted: %s", id),
+	})
+}
+
+func editWarranty(c *context.AppContext) {
+	id := c.Params.ByName("id")
+	w := &models.Warranty{}
+	err := c.DB.Find(w, id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("id not found: %s", id),
+		})
+		log.Println(err)
+		return
+	}
+	w2 := &models.Warranty{}
+	err = c.BindJSON(w2)
+	w.BrandName = w2.BrandName
+	w.StoreName = w2.StoreName
+	w.Amount = w2.Amount
+	w.TransactionTime = w2.TransactionTime
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "error updating warranty",
+		})
+		log.Println(err)
+		return
+	}
+	verrs, err := c.DB.ValidateAndUpdate(w)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "error saving warranty",
+		})
+		log.Println(err)
+		return
+	}
+	if verrs.HasAny() {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": verrs,
+		})
+		log.Println(verrs)
+		return
+	}
+	c.IndentedJSON(http.StatusOK, w)
+
+}
+
 func createWarranty(c *context.AppContext) {
 	w := &models.Warranty{}
 	err := c.BindJSON(w)
+	w.ID = uuid.UUID{}
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "error creating warranty",
@@ -61,7 +139,7 @@ func createWarranty(c *context.AppContext) {
 		log.Println(err)
 		return
 	}
-	verrs, err := c.DB.ValidateAndCreate(w)
+	verrs, err := c.DB.ValidateAndCreate(w, "ID")
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "error saving warranty",
@@ -95,7 +173,7 @@ func createUser(c *context.AppContext) {
 		log.Println(err)
 		return
 	}
-	verrs, err := c.DB.ValidateAndCreate(u)
+	verrs, err := c.DB.ValidateAndCreate(u, "ID")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "error saving user",
@@ -112,6 +190,47 @@ func createUser(c *context.AppContext) {
 		return
 	}
 	c.IndentedJSON(http.StatusOK, u)
+}
+
+func getImage(c *context.AppContext) {
+	w := &models.Warranty{}
+	download_path := "warranty_receipts/"
+	id := c.Params.ByName("id")
+	err := c.DB.Find(w, id)
+	var targetPath string
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("id not found: %s", id),
+		})
+		log.Println(err)
+		return
+	}
+	_, error := os.Stat(string(download_path + id + ".jpg"))
+	_, error1 := os.Stat(string(download_path + id + ".jpeg"))
+	_, error2 := os.Stat(string(download_path + id + ".png"))
+	// check if error is "file not exists"
+	if os.IsNotExist(error) && os.IsNotExist(error1) && os.IsNotExist(error2) {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("file does not exist for id: %s", id),
+		})
+		return
+	}
+	if !os.IsNotExist(error) {
+		targetPath = download_path + id + ".jpg"
+	}
+	if !os.IsNotExist(error1) {
+		targetPath = download_path + id + ".jpeg"
+	}
+	if !os.IsNotExist(error2) {
+		targetPath = download_path + id + ".png"
+	}
+
+	c.Header("Content-Description", "File Transfer")
+	c.Header("Content-Transfer-Encoding", "binary")
+	c.Header("Content-Disposition", "attachment; filename="+id)
+	c.Header("Content-Type", "application/octet-stream")
+	c.File(targetPath)
+
 }
 
 func addImage(c *context.AppContext) {
@@ -138,7 +257,7 @@ func addImage(c *context.AppContext) {
 		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
 	} else {
 		c.JSON(http.StatusNotFound, gin.H{
-			"message": fmt.Sprintf("Error: You can only upload a JPEG or PNG files"),
+			"message": "Error: You can only upload a JPEG or PNG files",
 		})
 		return
 	}
