@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
 	"os"
 	"path/filepath"
 	"strings"
@@ -28,6 +29,8 @@ func setupRouter(db *pop.Connection) *gin.Engine {
 	r.POST("/warranties", withDb(db, createWarranty))
 	r.POST("/warranties/:id/upload", withDb(db, addImage))
 	r.GET("/warranties/:id/download", withDb(db, getImage))
+
+
 
 	r.POST("/users", withDb(db, createUser))
 	r.PUT("/warranties/:id", withDb(db, editWarranty))
@@ -229,6 +232,7 @@ func getImage(c *context.AppContext) {
 	c.File(targetPath)
 
 }
+
 func addImage(c *context.AppContext) {
 
 	file, _ := c.FormFile("file")
