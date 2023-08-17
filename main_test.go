@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -146,6 +147,55 @@ func TestAddImage(t *testing.T) {
 	// Assert the response
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, fmt.Sprintf("'%s' uploaded!", "test.jpg"), w.Body.String())
+}
+
+func TestGetImage(t *testing.T) {
+	router := initEngine()
+
+	// Create a new Warranty for testing purposes
+	warranty := models.Warranty{
+		ID:              uuid.UUID{},
+		BrandName:       "Samsung",
+		StoreName:       "Costco",
+		TransactionTime: time.Now(),
+		ExpiryTime:      time.Now().Add(5 * time.Second * 86400),
+		Amount:          100000,
+	}
+	// Save the warranty to the database so we can retrieve it later
+	db := models.Init()
+	verrs, err := db.ValidateAndCreate(&warranty)
+	assert.NoError(t, err)
+	assert.False(t, verrs.HasAny())
+
+	// Simulate a buffer image data (replace this with your actual image data)
+	imageData := []byte{255, 216, 255, 242, 0, 0, 0, 0}
+
+	// Write the buffer image data to a file inside the directory
+	err = ioutil.WriteFile("warranty_receipts/"+warranty.ID.String()+".jpg", imageData, 0644)
+	assert.NoError(t, err)
+
+	// Create a new test file
+	//fileBuf := new(bytes.Buffer)
+	//multipartWriter := multipart.NewWriter(fileBuf)
+	//filename := warranty.ID.String() + ".jpg"
+	//fmt.Println(filename)
+	//part, err := multipartWriter.CreateFormFile("file", filename)
+	//assert.NoError(t, err)
+	//part.Write([]byte("test image data"))
+	//multipartWriter.Close()
+
+	// Prepare the HTTP request
+	w := httptest.NewRecorder()
+	req, err := http.NewRequest("GET", fmt.Sprintf("/warranties/%s/download", warranty.ID), nil)
+	assert.NoError(t, err)
+	//req.Header.Set("Content-Type", multipartWriter.FormDataContentType())
+
+	// Perform the request
+	router.ServeHTTP(w, req)
+
+	// Assert the response
+	assert.Equal(t, 200, w.Code)
+	//assert.Equal(t, fmt.Sprintf("'%s' uploaded!", "test.jpg"), w.Body.String())
 }
 
 func initEngine() *gin.Engine {
