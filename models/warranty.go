@@ -15,4 +15,5 @@ type Warranty struct {
 	Amount          int       `json:"amount" db:"amount"`
 	CreatedAt       time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at" db:"updated_at"`
+	Uid             uuid.UUID `json:"uid" db:"uid"`
 }

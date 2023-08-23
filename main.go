@@ -26,15 +26,15 @@ func setupRouter(db *pop.Connection) *gin.Engine {
 	r := gin.Default()
 	r.MaxMultipartMemory = 8 << 20
 	r.GET("/warranties/:id", withDb(db, warrantyByID))
+	r.GET("/user/:uid", withDb(db, warrantyByUser))
+	r.GET("user/:uid/warranties/:id", withDb(db, warrantyByIDUser))
 	r.POST("/warranties", withDb(db, createWarranty))
 	r.POST("/warranties/:id/upload", withDb(db, addImage))
 	r.GET("/warranties/:id/download", withDb(db, getImage))
-
-
-
 	r.POST("/users", withDb(db, createUser))
 	r.PUT("/warranties/:id", withDb(db, editWarranty))
 	r.DELETE("/warranties/:id", withDb(db, deleteWarranty))
+	r.DELETE("user/:uid//warranties/:id", withDb(db, deleteWarrantybyIDUser))
 	return r
 }
 
@@ -51,7 +51,37 @@ func warrantyByID(c *context.AppContext) {
 	err := c.DB.Find(w, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"message": fmt.Sprintf("id not found: %s", id),
+			"message": fmt.Sprintf("Warranty id not found: %s", id),
+		})
+		log.Println(err)
+		return
+	}
+	c.IndentedJSON(http.StatusOK, w)
+}
+func warrantyByUser(c *context.AppContext) {
+	uid := c.Params.ByName("uid")
+	var w []models.Warranty
+	err := c.DB.RawQuery("SELECT * FROM warranties where uid LIKE ?", uid).All(&w)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("User ID not found: %s", uid),
+		})
+		log.Println(err)
+		return
+	}
+	c.JSON(http.StatusOK, w)
+}
+
+func warrantyByIDUser(c *context.AppContext) {
+	id := c.Params.ByName("id")
+	uid := c.Params.ByName("uid")
+	var w []models.Warranty
+	err := c.DB.RawQuery("SELECT * FROM warranties where uid LIKE ? AND id LIKE ?", uid, id).All(&w)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("Please recheck warranty id: %s and user id: %s combination", id, uid),
 		})
 		log.Println(err)
 		return
@@ -85,6 +115,35 @@ func deleteWarranty(c *context.AppContext) {
 	})
 }
 
+func deleteWarrantybyIDUser(c *context.AppContext) {
+	id := c.Params.ByName("id")
+	uid := c.Params.ByName("uid")
+	var w []models.Warranty
+	err := c.DB.RawQuery("SELECT * FROM warranties where uid LIKE ? AND id LIKE ?", uid, id).All(&w)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("Record not found for warranty: %s and user: %s", id, uid),
+		})
+		log.Println(err)
+		return
+	}
+	fmt.Println(w)
+	err = c.DB.Destroy(w)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("Records cannot be deleted for warranty: %s and user: %s", id, uid),
+		})
+		log.Println(err)
+		return
+	}
+	//fmt.Println("Record successfully deleted")
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": fmt.Sprintf("Record successfully deleted for warranty: %s and user: %s", id, uid),
+	})
+}
+
 func editWarranty(c *context.AppContext) {
 	id := c.Params.ByName("id")
 	w := &models.Warranty{}
@@ -102,6 +161,7 @@ func editWarranty(c *context.AppContext) {
 	w.StoreName = w2.StoreName
 	w.Amount = w2.Amount
 	w.TransactionTime = w2.TransactionTime
+	w.Uid = w2.Uid
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "error updating warranty",
