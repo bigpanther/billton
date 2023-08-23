@@ -74,6 +74,40 @@ func TestCreateAndGetWarranty(t *testing.T) {
 	assert.Equal(t, newID, retW.ID)
 }
 
+func TestCreateAndGetWarranties(t *testing.T) {
+	router := initEngine()
+
+	user := models.User{ID: uuid.UUID{}, Name: "Tim Hortons"}
+	db := models.Init()
+	db.ValidateAndCreate(&user)
+
+	warranty := models.Warranty{ID: uuid.UUID{}, BrandName: "Samsung", StoreName: "Costco",
+		TransactionTime: time.Now(), ExpiryTime: time.Now().Add(5 * time.Second * 86400),
+		Amount: 100000, Uid: user.ID}
+	db.ValidateAndCreate(&warranty)
+
+	warranty2 := models.Warranty{ID: uuid.UUID{}, BrandName: "Samsung", StoreName: "Walmart",
+		TransactionTime: time.Now(), ExpiryTime: time.Now().Add(5 * time.Second * 86400),
+		Amount: 100005, Uid: user.ID}
+	verrs, err := db.ValidateAndCreate(&warranty2)
+	assert.NoError(t, err)
+	assert.False(t, verrs.HasAny())
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", fmt.Sprintf("/user/%s", user.ID), nil)
+	router.ServeHTTP(w, req)
+	var retW []models.Warranty
+	json.Unmarshal(w.Body.Bytes(), &retW)
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, warranty2.BrandName, retW[1].BrandName)
+	assert.Equal(t, warranty.BrandName, retW[0].BrandName)
+	assert.Equal(t, user.ID, retW[0].Uid)
+	assert.Equal(t, user.ID, retW[1].Uid)
+	assert.Equal(t, warranty2.ID, retW[1].ID)
+	assert.Equal(t, warranty.ID, retW[0].ID)
+
+}
+
 func TestEditWarranty(t *testing.T) {
 	router := initEngine()
 
