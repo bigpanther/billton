@@ -118,7 +118,6 @@ func deleteWarrantybyIDUser(c *context.AppContext) {
 	userid := c.Params.ByName("userid")
 	var w []models.Warranty
 	err := c.DB.Where("userid = ?", userid).Where("id = ?", id).All(&w)
-	c.IndentedJSON(http.StatusOK, &w)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": fmt.Sprintf("Record not found for warranty: %s and user: %s", id, userid),
