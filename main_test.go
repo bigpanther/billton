@@ -38,8 +38,8 @@ func TestCreateUser(t *testing.T) {
 	json.Unmarshal(u.Body.Bytes(), retU)
 	assert.Equal(t, 200, u.Code)
 	assert.Equal(t, user.Name, retU.Name)
-	newUID := retU.ID
-	assert.NotEqual(t, user.ID, newUID)
+	newUserID := retU.ID
+	assert.NotEqual(t, user.ID, newUserID)
 }
 
 func TestCreateAndGetWarranty(t *testing.T) {
@@ -51,7 +51,7 @@ func TestCreateAndGetWarranty(t *testing.T) {
 
 	warranty := models.Warranty{ID: uuid.UUID{}, BrandName: "Samsung", StoreName: "Costco",
 		TransactionTime: time.Now(), ExpiryTime: time.Now().Add(5 * time.Second * 86400),
-		Amount: 100000, Uid: user.ID}
+		Amount: 100000, UserID: user.ID}
 	jsonValue, _ := json.Marshal(warranty)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/warranties", bytes.NewBuffer(jsonValue))
@@ -60,7 +60,7 @@ func TestCreateAndGetWarranty(t *testing.T) {
 	json.Unmarshal(w.Body.Bytes(), retW)
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, warranty.BrandName, retW.BrandName)
-	assert.Equal(t, warranty.Uid, retW.Uid)
+	assert.Equal(t, warranty.UserID, retW.UserID)
 	newID := retW.ID
 	assert.NotEqual(t, warranty.ID, newID)
 
@@ -83,12 +83,12 @@ func TestCreateAndGetWarranties(t *testing.T) {
 
 	warranty := models.Warranty{ID: uuid.UUID{}, BrandName: "Samsung", StoreName: "Costco",
 		TransactionTime: time.Now(), ExpiryTime: time.Now().Add(5 * time.Second * 86400),
-		Amount: 100000, Uid: user.ID}
+		Amount: 100000, UserID: user.ID}
 	db.ValidateAndCreate(&warranty)
 
 	warranty2 := models.Warranty{ID: uuid.UUID{}, BrandName: "Samsung", StoreName: "Walmart",
 		TransactionTime: time.Now(), ExpiryTime: time.Now().Add(5 * time.Second * 86400),
-		Amount: 100005, Uid: user.ID}
+		Amount: 100005, UserID: user.ID}
 	verrs, err := db.ValidateAndCreate(&warranty2)
 	assert.NoError(t, err)
 	assert.False(t, verrs.HasAny())
@@ -101,8 +101,8 @@ func TestCreateAndGetWarranties(t *testing.T) {
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, warranty2.BrandName, retW[1].BrandName)
 	assert.Equal(t, warranty.BrandName, retW[0].BrandName)
-	assert.Equal(t, user.ID, retW[0].Uid)
-	assert.Equal(t, user.ID, retW[1].Uid)
+	assert.Equal(t, user.ID, retW[0].UserID)
+	assert.Equal(t, user.ID, retW[1].UserID)
 	assert.Equal(t, warranty2.ID, retW[1].ID)
 	assert.Equal(t, warranty.ID, retW[0].ID)
 
@@ -125,7 +125,7 @@ func TestEditWarranty(t *testing.T) {
 
 	warranty := models.Warranty{ID: uuid.UUID{}, BrandName: "LG", StoreName: "Walmart",
 		TransactionTime: time.Now(), ExpiryTime: time.Now().Add(5 * time.Second * 86400),
-		Amount: 10000, Uid: user.ID}
+		Amount: 10000, UserID: user.ID}
 	jsonValue, _ := json.Marshal(warranty)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/warranties", bytes.NewBuffer(jsonValue))
@@ -140,7 +140,7 @@ func TestEditWarranty(t *testing.T) {
 	w = httptest.NewRecorder()
 	warranty2 := models.Warranty{BrandName: "Samsung", StoreName: "Costco",
 		TransactionTime: time.Now(), ExpiryTime: time.Now().Add(5 * time.Second * 86400),
-		Amount: 1000, Uid: user.ID}
+		Amount: 1000, UserID: user.ID}
 	jsonValue2, _ := json.Marshal(warranty2)
 	req, _ = http.NewRequest("PUT", fmt.Sprintf("/warranties/%s", newID), bytes.NewBuffer(jsonValue2))
 	router.ServeHTTP(w, req)
@@ -159,7 +159,7 @@ func TestDeleteWarranty(t *testing.T) {
 
 	warranty := models.Warranty{ID: uuid.UUID{}, BrandName: "LG", StoreName: "Walmart",
 		TransactionTime: time.Now(), ExpiryTime: time.Now().Add(5 * time.Second * 86400),
-		Amount: 10000, Uid: user.ID}
+		Amount: 10000, UserID: user.ID}
 	jsonValue, _ := json.Marshal(warranty)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/warranties", bytes.NewBuffer(jsonValue))
@@ -195,7 +195,7 @@ func TestAddImage(t *testing.T) {
 		TransactionTime: time.Now(),
 		ExpiryTime:      time.Now().Add(5 * time.Second * 86400),
 		Amount:          100000,
-		Uid:             user.ID,
+		UserID:          user.ID,
 	}
 	// Save the warranty to the database so we can retrieve it later
 
