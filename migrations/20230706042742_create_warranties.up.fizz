@@ -5,5 +5,7 @@ create_table("warranties") {
     t.Column("brand_name", "string", {size: 50})
     t.Column("store_name", "string", {size: 50})
     t.Column("amount", "integer", {})
+    t.Column("userid", "uuid", {})
     t.Timestamps()
+    t.ForeignKey("userid", {"users": ["id"]}, {"on_delete": "cascade"})
 }
