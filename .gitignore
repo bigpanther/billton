@@ -6,3 +6,4 @@ warrant
 .idea
 migrations/schema.sql
 warranty_receipts
+node_modules

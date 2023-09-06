@@ -4,7 +4,8 @@
 
 Install the following on your machine.
 
-- Go version [1.20+](https://go.dev/doc/install)
+- Go version [1.21+](https://go.dev/doc/install)
+- Postgres [16.1+](https://www.postgresql.org/download/macosx/)
 - XCode on your Mac from the App Store
 - [Flutter](https://docs.flutter.dev/get-started/install) fpr mobile development
 - [Postman](https://www.postman.com/downloads/) for API access
@@ -18,11 +19,10 @@ grep 'export PATH=$PATH:$(go env GOPATH)/bin' ~/.zshrc || echo 'export PATH=$PAT
 Clone this repository
 
 ```
-git clone https://github.com/bigpanther/warrant.git
+git clone https://github.com/bigpanther/billton.git
 ```
 
 Open the code in `Visual Studio Code`
-
 
 Install the `soda` tool for database migrations
 

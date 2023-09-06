@@ -22,7 +22,6 @@ class WarrantBloc extends Bloc<CounterEvent, int> {
       dio.options.contentType = Headers.jsonContentType;
       var r =
           await dio.post('/users', data: {'name': '${event.username}-$state'});
-      print(r);
       emit(state + 3);
     });
   }
