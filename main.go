@@ -27,6 +27,7 @@ func setupRouter(db *pop.Connection) *gin.Engine {
 	r.MaxMultipartMemory = 8 << 20
 	r.GET("/warranties/:id", withDb(db, warrantyByID))
 	r.GET("/user/:userid", withDb(db, warrantyByUser))
+	r.GET("/users/:userid", withDb(db, userByID))
 	r.GET("user/:userid/warranties/:id", withDb(db, warrantyByIDUser))
 	r.POST("/warranties", withDb(db, createWarranty))
 	r.POST("/warranties/:id/upload", withDb(db, addImage))
@@ -58,6 +59,21 @@ func warrantyByID(c *context.AppContext) {
 	}
 	c.IndentedJSON(http.StatusOK, w)
 }
+
+func userByID(c *context.AppContext) {
+	userid := c.Params.ByName("userid")
+	w := &models.User{}
+	err := c.DB.Find(w, userid)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("Warranty id not found: %s", userid),
+		})
+		log.Println(err)
+		return
+	}
+	c.IndentedJSON(http.StatusOK, w)
+}
+
 func warrantyByUser(c *context.AppContext) {
 	userid := c.Params.ByName("userid")
 	var w []models.Warranty
