@@ -24,10 +24,10 @@ git clone https://github.com/bigpanther/billton.git
 
 Open the code in `Visual Studio Code`
 
-Install the `soda` tool for database migrations
+Install the `atlas` tool for database migrations
 
 ```bash
-go install -tags sqlite github.com/gobuffalo/pop/v6/soda@latest
+brew install ariga/tap/atlas
 ```
 
 ## Fetching latest code from Github (Terminal)
@@ -112,7 +112,7 @@ package models
 import (
 	"time"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 )
 
 type User struct {

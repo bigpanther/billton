@@ -4,7 +4,6 @@ package models
 type UserRole string
 
 const (
-
 	// UserRoleAdmin represents Admin UserRole
 	UserRoleAdmin UserRole = "Admin"
 	// UserRoleConsumer represents Consumer UserRole

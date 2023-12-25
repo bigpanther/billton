@@ -1,8 +1,8 @@
 package app_test
 
 import (
-	"github.com/bigpanther/warrant/internal/app"
-	"github.com/bigpanther/warrant/internal/middleware"
+	"github.com/bigpanther/billton/internal/app"
+	"github.com/bigpanther/billton/internal/middleware"
 	"github.com/gin-gonic/gin"
 )
 

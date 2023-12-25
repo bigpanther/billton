@@ -5,7 +5,7 @@ import (
 
 	"firebase.google.com/go/v4/auth"
 	"firebase.google.com/go/v4/messaging"
-	"github.com/bigpanther/warrant/internal/models"
+	"github.com/bigpanther/billton/internal/models"
 )
 
 type fakefirebase struct {

@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/bigpanther/warrant/internal/app"
+	"github.com/bigpanther/billton/internal/app"
 )
 
 func main() {

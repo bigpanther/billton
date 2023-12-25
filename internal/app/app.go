@@ -8,14 +8,14 @@ import (
 
 	"log/slog"
 
-	"github.com/bigpanther/warrant/internal/firebase"
-	"github.com/bigpanther/warrant/internal/middleware"
-	"github.com/bigpanther/warrant/internal/models"
+	"github.com/bigpanther/billton/internal/firebase"
+	"github.com/bigpanther/billton/internal/middleware"
+	"github.com/bigpanther/billton/internal/models"
 	"github.com/gin-gonic/gin"
-	"github.com/gobuffalo/envy"
-	"github.com/gobuffalo/pop/v6"
 	slogformatter "github.com/samber/slog-formatter"
 	sloggin "github.com/samber/slog-gin"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var logger = slog.New(
@@ -46,20 +46,20 @@ func App() (*gin.Engine, error) {
 
 // db is a connection to the database to be used
 // throughout the application.
-var db *pop.Connection
+var db *gorm.DB
 var once sync.Once
 
 // InitDb initializes a db connection
-func InitDb() *pop.Connection {
+func InitDb() *gorm.DB {
 	var err error
-	env := envy.Get("GO_ENV", "dev")
+
+	dsn := "host=localhost user=postgres password=postgres dbname=billton-dev port=5432 sslmode=disable TimeZone=UTC"
 	once.Do(func() {
-		db, err = pop.Connect(env)
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{TranslateError: true})
 		if err != nil {
-			log.Fatal(env, err)
+			log.Fatal(env(), err)
 		}
 	})
-	pop.Debug = env == "dev"
 	return db
 }
 
@@ -68,11 +68,17 @@ const currentUserKey = "current_user"
 func loggedInUser(c *gin.Context) *models.User {
 	return c.Value(currentUserKey).(*models.User)
 }
+func env() string {
+	env := os.Getenv("GO_ENV")
+	if env == "" {
+		env = "dev"
+	}
+	return env
+}
 
 // InitFirebase initializes a firebase instance
 func InitFirebase() (f firebase.Firebase, err error) {
-	env := envy.Get("GO_ENV", "dev")
-	isProd := env == "production"
+	isProd := env() == "production"
 	if isProd {
 		return firebase.New()
 	}

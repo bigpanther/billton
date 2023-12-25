@@ -1,14 +1,14 @@
 openapi: 3.1.0
 servers:
-  - description: The warrant local API
+  - description: The Billton local API
     url: http://127.0.0.1:8080
-  - description: The warrant production API
-    url: https://api.warrant.bigpanther.ca
+  - description: The Billton production API
+    url: https://api.billton.bigpanther.ca
 info:
   version: "0.0.1"
-  title: Warrant API
+  title: Billton API
   description: >-
-    The warrant API
+    The Billton API
 
 security:
   - ApiKeyAuth: []
@@ -17,7 +17,7 @@ paths:
     get:
       summary: List all warranties
       description: >-
-        List all tenants
+        List all warranties
 
       parameters:
         - name: name

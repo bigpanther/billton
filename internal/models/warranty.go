@@ -3,17 +3,18 @@ package models
 import (
 	"time"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Warranty struct {
-	ID              uuid.UUID `json:"id" db:"id" rw:"r"`
-	TransactionTime time.Time `json:"transaction_time" db:"transaction_time"`
-	ExpiryTime      time.Time `json:"expiry_time" db:"expiry_time"`
-	BrandName       string    `json:"brand_name" db:"brand_name"`
-	StoreName       string    `json:"store_name" db:"store_name"`
-	Amount          int       `json:"amount" db:"amount"`
-	CreatedAt       time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at" db:"updated_at"`
-	UserID          uuid.UUID `json:"userid" db:"userid"`
+	gorm.Model
+	ID              uuid.UUID `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
+	TransactionTime time.Time `json:"transaction_time"`
+	ExpiryTime      time.Time `json:"expiry_time"`
+	BrandName       string    `json:"brand_name" gorm:"size:255;not null"`
+	StoreName       string    `json:"store_name" gorm:"size:255;not null"`
+	Amount          int       `json:"amount"`
+	UserID          uuid.UUID `json:"userid" gorm:"type:uuid;not null;index"`
+	User            User
 }

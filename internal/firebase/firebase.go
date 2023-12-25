@@ -1,6 +1,6 @@
 package firebase
 
-//go:generate mockgen -destination ../app/mock_firebase_test.go -package app github.com/bigpanther/warrant/internal/firebase Firebase
+//go:generate mockgen -destination ../app/mock_firebase_test.go -package app github.com/bigpanther/billton/internal/firebase Firebase
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
 	"firebase.google.com/go/v4/messaging"
-	"github.com/bigpanther/warrant/internal/models"
+	"github.com/bigpanther/billton/internal/models"
 	"google.golang.org/api/option"
 )
 

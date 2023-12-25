@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/bigpanther/warrant/internal/models"
+	"github.com/bigpanther/billton/internal/models"
 	"github.com/gin-gonic/gin"
-	"github.com/gobuffalo/pop/v6"
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 // WarrantiesRoutes sets up the routes for managing warranties
@@ -25,39 +25,39 @@ func WarrantiesRoutes(rg *gin.RouterGroup) {
 }
 
 func warrantyByID(c *gin.Context) {
-	db := c.Value("db").(*pop.Connection)
+	db := c.Value("db").(*gorm.DB)
 	id := c.Params.ByName("id")
 	w := &models.Warranty{}
-	err := db.Find(w, id)
-	if err != nil {
+	tx := db.Find(w, "id = ?", id)
+	if tx.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": fmt.Sprintf("Warranty id not found: %s", id),
 		})
-		log.Println(err)
+		log.Println(tx.Error)
 		return
 	}
 	c.IndentedJSON(http.StatusOK, w)
 }
 
 func deleteWarranty(c *gin.Context) {
-	db := c.Value("db").(*pop.Connection)
+	db := c.Value("db").(*gorm.DB)
 
 	id := c.Params.ByName("id")
 	w := &models.Warranty{}
-	err := db.Find(w, id)
-	if err != nil {
+	tx := db.Find(w, "id = ?", id)
+	if tx.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": fmt.Sprintf("id not found: %s", id),
 		})
-		log.Println(err)
+		log.Println(tx.Error)
 		return
 	}
-	err = db.Destroy(w)
-	if err != nil {
+	tx = db.Delete(w)
+	if tx.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": fmt.Sprintf("Record cannot be deleted: %s", id),
 		})
-		log.Println(err)
+		log.Println(tx.Error)
 		return
 	}
 	//fmt.Println("Record successfully deleted")
@@ -68,25 +68,20 @@ func deleteWarranty(c *gin.Context) {
 }
 
 func editWarranty(c *gin.Context) {
-	db := c.Value("db").(*pop.Connection)
+	db := c.Value("db").(*gorm.DB)
 
 	id := c.Params.ByName("id")
 	w := &models.Warranty{}
-	err := db.Find(w, id)
-	if err != nil {
+	tx := db.Find(w, "id = ?", id)
+	if tx.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": fmt.Sprintf("id not found: %s", id),
 		})
-		log.Println(err)
+		log.Println(tx.Error)
 		return
 	}
 	w2 := &models.Warranty{}
-	err = c.BindJSON(w2)
-	w.BrandName = w2.BrandName
-	w.StoreName = w2.StoreName
-	w.Amount = w2.Amount
-	w.TransactionTime = w2.TransactionTime
-	w.UserID = w2.UserID
+	err := c.BindJSON(w2)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "error updating warranty",
@@ -94,7 +89,12 @@ func editWarranty(c *gin.Context) {
 		log.Println(err)
 		return
 	}
-	verrs, err := db.ValidateAndUpdate(w)
+	w.BrandName = w2.BrandName
+	w.StoreName = w2.StoreName
+	w.Amount = w2.Amount
+	w.TransactionTime = w2.TransactionTime
+	w.UserID = w2.UserID
+	tx = db.Save(w)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "error saving warranty",
@@ -102,11 +102,11 @@ func editWarranty(c *gin.Context) {
 		log.Println(err)
 		return
 	}
-	if verrs.HasAny() {
+	if tx.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": verrs,
+			"message": tx.Error.Error(),
 		})
-		log.Println(verrs)
+		log.Println(tx.Error.Error())
 		return
 	}
 	c.IndentedJSON(http.StatusOK, w)
@@ -114,7 +114,7 @@ func editWarranty(c *gin.Context) {
 }
 
 func createWarranty(c *gin.Context) {
-	db := c.Value("db").(*pop.Connection)
+	db := c.Value("db").(*gorm.DB)
 
 	w := &models.Warranty{}
 	err := c.BindJSON(w)
@@ -126,19 +126,12 @@ func createWarranty(c *gin.Context) {
 		log.Println(err)
 		return
 	}
-	verrs, err := db.ValidateAndCreate(w, "ID")
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
+	tx := db.Create(w)
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "error saving warranty",
 		})
-		log.Println(err)
-		return
-	}
-	if verrs.HasAny() {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": verrs,
-		})
-		log.Println(verrs)
+		log.Println(tx.Error)
 		return
 	}
 	c.IndentedJSON(http.StatusOK, w)
@@ -151,18 +144,18 @@ func isValidFilename(name string) bool {
 }
 
 func getImage(c *gin.Context) {
-	db := c.Value("db").(*pop.Connection)
+	db := c.Value("db").(*gorm.DB)
 
 	w := &models.Warranty{}
 	download_path := "warranty_receipts/"
 	id := c.Params.ByName("id")
-	err := db.Find(w, id)
+	tx := db.Find(w, "id = ?", id)
 	var targetPath string
-	if err != nil {
+	if tx.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": fmt.Sprintf("id not found: %s", id),
 		})
-		log.Println(err)
+		log.Println(tx.Error)
 		return
 	}
 	_, error := os.Stat(string(download_path + id + ".jpg"))
@@ -194,15 +187,15 @@ func getImage(c *gin.Context) {
 }
 
 func addImage(c *gin.Context) {
-	db := c.Value("db").(*pop.Connection)
+	db := c.Value("db").(*gorm.DB)
 
 	file, _ := c.FormFile("file")
 	log.Println(file.Filename)
 	id := c.Params.ByName("id")
 	w := &models.Warranty{}
-	err := db.Find(w, id)
+	tx := db.Find(w, "id = ?", id)
 
-	if err != nil {
+	if tx.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": fmt.Sprintf("id not found: %s", id),
 		})
@@ -218,7 +211,7 @@ func addImage(c *gin.Context) {
 	dst := "warranty_receipts/" + id + filepath.Ext(fileName)
 
 	// Upload the file to specific dst.
-	err = c.SaveUploadedFile(file, dst)
+	err := c.SaveUploadedFile(file, dst)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": fmt.Sprintf("error saving image: %v", err),

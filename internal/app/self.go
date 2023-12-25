@@ -5,7 +5,7 @@ import (
 
 	"log/slog"
 
-	"github.com/bigpanther/warrant/internal/firebase"
+	"github.com/bigpanther/billton/internal/firebase"
 	"github.com/gin-gonic/gin"
 )
 

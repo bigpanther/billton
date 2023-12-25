@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bigpanther/warrant/internal/app"
-	"github.com/bigpanther/warrant/internal/models"
-	"github.com/gofrs/uuid"
+	"github.com/bigpanther/billton/internal/app"
+	"github.com/bigpanther/billton/internal/models"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -33,9 +33,9 @@ func TestCreateAndGetWarranty(t *testing.T) {
 
 	user := models.User{ID: uuid.UUID{}, Name: "Tim Hortons"}
 	db := app.InitDb()
-	verrs, err := db.ValidateAndCreate(&user)
-	require.Nil(t, err)
-	require.False(t, verrs.HasAny(), verrs.Error())
+	tx := db.Create(&user)
+	require.Nil(t, tx.Error)
+	//require.False(t, verrs.HasAny(), verrs.Error())
 
 	warranty := models.Warranty{ID: uuid.UUID{}, BrandName: "Samsung", StoreName: "Costco",
 		TransactionTime: time.Now(), ExpiryTime: time.Now().Add(5 * time.Second * 86400),
@@ -76,9 +76,9 @@ func TestEditWarranty(t *testing.T) {
 
 	user := models.User{ID: uuid.UUID{}, Name: "Sam Smith"}
 	db := app.InitDb()
-	verrs, err := db.ValidateAndCreate(&user)
-	require.Nil(t, err)
-	require.False(t, verrs.HasAny(), verrs.Error())
+	tx := db.Create(&user)
+	require.Nil(t, tx.Error)
+	//require.False(t, verrs.HasAny(), verrs.Error())
 
 	warranty := models.Warranty{ID: uuid.UUID{}, BrandName: "LG", StoreName: "Walmart",
 		TransactionTime: time.Now(), ExpiryTime: time.Now().Add(5 * time.Second * 86400),
@@ -124,9 +124,9 @@ func TestDeleteWarranty(t *testing.T) {
 
 	user := models.User{ID: uuid.UUID{}, Name: "Sam Smith"}
 	db := app.InitDb()
-	verrs, err := db.ValidateAndCreate(&user)
-	require.Nil(t, err)
-	require.False(t, verrs.HasAny(), verrs.Error())
+	tx := db.Create(&user)
+	require.Nil(t, tx.Error)
+	//require.False(t, verrs.HasAny(), verrs.Error())
 
 	warranty := models.Warranty{ID: uuid.UUID{}, BrandName: "LG", StoreName: "Walmart",
 		TransactionTime: time.Now(), ExpiryTime: time.Now().Add(5 * time.Second * 86400),
@@ -164,9 +164,9 @@ func TestAddImage(t *testing.T) {
 
 	user := models.User{ID: uuid.UUID{}, Name: "Sam Smith"}
 	db := app.InitDb()
-	verrs, err := db.ValidateAndCreate(&user)
-	require.Nil(t, err)
-	require.False(t, verrs.HasAny(), verrs.Error())
+	tx := db.Create(&user)
+	require.Nil(t, tx.Error)
+	//require.False(t, verrs.HasAny(), verrs.Error())
 
 	// Create a new Warranty for testing purposes
 	warranty := models.Warranty{
@@ -180,9 +180,9 @@ func TestAddImage(t *testing.T) {
 	}
 	// Save the warranty to the database so we can retrieve it later
 
-	verrs, err = db.ValidateAndCreate(&warranty)
-	require.Nil(t, err)
-	require.False(t, verrs.HasAny(), verrs.Error())
+	tx = db.Create(&warranty)
+	require.Nil(t, tx.Error)
+	//require.False(t, verrs.HasAny(), verrs.Error())
 
 	// Create a new test file
 	fileBuf := new(bytes.Buffer)
@@ -196,7 +196,7 @@ func TestAddImage(t *testing.T) {
 
 	// Prepare the HTTP request
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("POST", fmt.Sprintf("/test-warranties/%s/upload", warranty.ID), fileBuf)
+	req, err := http.NewRequest("POST", fmt.Sprintf("/test-warranties/%s/upload_image", warranty.ID), fileBuf)
 	require.NoError(t, err)
 	req.Header.Set("Content-Type", multipartWriter.FormDataContentType())
 
