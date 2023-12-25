@@ -2,10 +2,10 @@ package context
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/gobuffalo/pop/v6"
+	"gorm.io/gorm"
 )
 
 type AppContext struct {
 	*gin.Context
-	DB *pop.Connection
+	DB *gorm.DB
 }

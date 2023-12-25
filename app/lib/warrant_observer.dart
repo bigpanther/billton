@@ -4,9 +4,9 @@ import 'package:bloc/bloc.dart';
 /// [BlocObserver] for the counter application which
 /// observes all state changes.
 /// {@endtemplate}
-class CounterObserver extends BlocObserver {
+class WarrantObserver extends BlocObserver {
   /// {@macro counter_observer}
-  const CounterObserver();
+  const WarrantObserver();
 
   @override
   void onChange(BlocBase<dynamic> bloc, Change<dynamic> change) {
