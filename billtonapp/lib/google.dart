@@ -16,70 +16,77 @@ class _GoogleSignInScreenState extends State<GoogleSignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Google SignIn Screen')),
-        body: ValueListenableBuilder(
-            valueListenable: userCredential,
-            builder: (context, value, child) {
-              return (userCredential.value == '' ||
-                      userCredential.value == null)
-                  ? Center(
-                      child: Card(
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        child: IconButton(
-                          iconSize: 40,
-                          icon: Image.asset(
-                            'assets/images/google_icon.png',
-                          ),
+      appBar: AppBar(title: const Text('Google SignIn Screen')),
+      body: ValueListenableBuilder(
+        valueListenable: userCredential,
+        builder: (context, value, child) {
+          return (userCredential.value == '' || userCredential.value == null)
+              ? Center(
+                  child: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    child: IconButton(
+                      iconSize: 40,
+                      icon: Image.network(
+                          'https://img.icons8.com/?size=96&id=17949&format=png'),
+                      onPressed: () async {
+                        userCredential.value = await signInWithGoogle();
+                        if (userCredential.value != null)
+                          print(userCredential.value.user!.email);
+                      },
+                    ),
+                  ),
+                )
+              : Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        clipBehavior: Clip.antiAlias,
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border:
+                                Border.all(width: 1.5, color: Colors.black54)),
+                        child: Image.network(
+                            userCredential.value.user!.photoURL.toString()),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Text(userCredential.value.user!.displayName.toString()),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Text(userCredential.value.user!.email.toString()),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      ElevatedButton(
                           onPressed: () async {
-                            userCredential.value = await signInWithGoogle();
-                            if (userCredential.value != null)
-                              print(userCredential.value.user!.email);
+                            bool result = await signOutFromGoogle();
+                            if (result) userCredential.value = '';
                           },
-                        ),
-                      ),
-                    )
-                  : Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            clipBehavior: Clip.antiAlias,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                    width: 1.5, color: Colors.black54)),
-                            child: Image.network(
-                                userCredential.value.user!.photoURL.toString()),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Text(userCredential.value.user!.displayName
-                              .toString()),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Text(userCredential.value.user!.email.toString()),
-                          const SizedBox(
-                            height: 30,
-                          ),
-                          ElevatedButton(
-                              onPressed: () async {
-                                bool result = await signOutFromGoogle();
-                                if (result) userCredential.value = '';
-                              },
-                              child: const Text('Logout'))
-                        ],
-                      ),
-                    );
-            }));
+                          child: const Text('Logout'))
+                    ],
+                  ),
+                );
+        },
+      ),
+      floatingActionButton:
+          FloatingActionButton.small(onPressed: () => print("hello")),
+    );
   }
 
   Future<dynamic> signInWithGoogle() async {
     await Firebase.initializeApp();
+    const snackBar = SnackBar(
+      content: Text('Yay! A SnackBar!'),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -93,10 +100,18 @@ class _GoogleSignInScreenState extends State<GoogleSignInScreen> {
 
       return await FirebaseAuth.instance.signInWithCredential(credential);
     } on Exception catch (e) {
+      const snackBar = SnackBar(
+        content: Text('Yay! A SnackBar!'),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       // TODO
       print('exception->$e');
     }
   }
+
+// Find the ScaffoldMessenger in the widget tree
+// and use it to show a SnackBar.
 
   Future<bool> signOutFromGoogle() async {
     try {
