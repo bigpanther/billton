@@ -1,0 +1,514 @@
+openapi: 3.1.0
+servers:
+  - description: The Billton local API
+    url: http://127.0.0.1:8080/v1
+  - description: The Billton production API
+    url: https://api.billton.bigpanther.ca/v1
+info:
+  version: "0.0.1"
+  title: Billton API
+  description: >-
+    The Billton API
+
+security:
+  - ApiKeyAuth: []
+paths:
+  /warranties:
+    get:
+      summary: List all warranties
+      description: >-
+        List all warranties
+
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: The name of the warranties. Matches names that begin with the values
+          schema:
+            type: string
+            minLength: 2
+        - name: page
+          in: query
+          required: false
+          description: The page number
+          schema:
+            type: string
+            format: int
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Warranties"
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a new warranty
+      description: >-
+        Create a new warranty
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Warranty"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Warranty"
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  "/warranties/{id}":
+    put:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the warranty
+          schema:
+            type: string
+            format: uuid
+      summary: Update an existing warranty
+      description: >-
+        Update an existing warranty
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Warranty"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Warranty"
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the warranty
+          schema:
+            type: string
+            format: uuid
+      summary: Get warranty details
+      description: >-
+        Get warranty details
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Warranty"
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /users:
+    get:
+      summary: List all users
+      description: >-
+        List all users
+
+      parameters:
+        - name: tenant_id
+          in: query
+          required: false
+          description: The id of the tenant
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          required: false
+          description: The page number
+          schema:
+            type: string
+            format: int
+        - name: name
+          in: query
+          description: The name of the customer. Matches names that begin with the values
+          schema:
+            type: string
+            minLength: 2
+        - name: role
+          in: query
+          description: The role of the user
+          schema:
+            $ref: "#/components/schemas/UserRole"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create a new user
+      description: >-
+        Create a new user
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  "/users/{id}":
+    put:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user
+          schema:
+            type: string
+            format: uuid
+      summary: Update an existing user
+      description: >-
+        Update an existing user
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user
+          schema:
+            type: string
+            format: uuid
+        - name: tenant_id
+          in: query
+          required: false
+          description: The id of the tenant
+          schema:
+            type: string
+            format: uuid
+      summary: Get user details
+      description: >-
+        Get user details
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the user
+          schema:
+            type: string
+            format: uuid
+      summary: Delete the user
+      description: >-
+        Delete the user
+
+      responses:
+        "204":
+          description: No Content
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /appinfo:
+    get:
+      summary: Get supported App info
+      description: >-
+        Get supported App info
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppInfo"
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /self:
+    get:
+      summary: Get details of the logged in user
+      description: >-
+        Get details of the logged in user
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /self/device-register:
+    post:
+      summary: Register the device for the user
+      description: >-
+        Register the device for the user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceId"
+      responses:
+        "204":
+          description: No Content
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /self/device-remove:
+    post:
+      summary: Remove the device for the user
+      description: >-
+        Remove the device for the user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceId"
+      responses:
+        "204":
+          description: No Content
+        default:
+          description: error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /health:
+    get:
+      summary: Get server health
+      description: >-
+        Get server health status
+
+      security: []
+      responses:
+        "200":
+          description: OK
+components:
+  schemas:
+    AppInfo:
+      type: object
+      required:
+        - minVersion
+      properties:
+        minVersion:
+          type:
+            - string
+            - null
+          readOnly: true
+    DeviceId:
+      type: object
+      properties:
+        token:
+          type: string
+          nullable: false
+      required:
+        - token
+    Warranties:
+      type: array
+      items:
+        $ref: "#/components/schemas/Warrant"
+      description: A list of warranties
+    Warranty:
+      type: object
+      required:
+        - name
+        - email
+        - username
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: false
+          default: "00000000-0000-0000-0000-000000000000"
+        created_at:
+          type: string
+          format: date-time
+          nullable: false
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: false
+          readOnly: true
+        name:
+          type: string
+          minLength: 3
+          maxLength: 50
+          nullable: false
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          nullable: false
+        email:
+          type: string
+          minLength: 3
+          maxLength: 50
+          nullable: false
+        role:
+          nullable: false
+          $ref: "#/components/schemas/UserRole"
+      description: A user in the system
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
+      description: A list of Users
+    User:
+      type: object
+      required:
+        - name
+        - email
+        - username
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: false
+          default: "00000000-0000-0000-0000-000000000000"
+        created_at:
+          type: string
+          format: date-time
+          nullable: false
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: false
+          readOnly: true
+        name:
+          type: string
+          minLength: 3
+          maxLength: 50
+          nullable: false
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          nullable: false
+        email:
+          type: string
+          minLength: 3
+          maxLength: 50
+          nullable: false
+        role:
+          nullable: false
+          $ref: "#/components/schemas/UserRole"
+      description: A user in the system
+    UserRole:
+      type: string
+      enum:
+        - Admin
+        - Consumer
+    Error:
+      type: object
+      required:
+        - code
+        - message
+        - id
+      properties:
+        code:
+          type: string
+          nullable: false
+        message:
+          type: string
+          nullable: false
+        id:
+          type: string
+          format: uuid
+          nullable: false
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-BP-TOKEN
