@@ -37,6 +37,9 @@ dependencies:
   firebase_core: ^2.24.2
   firebase_auth: ^4.16.0
   google_sign_in: ^6.2.1
+  image_picker: ^0.8.4+5  # Add this line for image picking functionality
+  firebase_storage: ^11.6.5  # Add this line for Firebase Storage functionality
+
 
 dev_dependencies:
   flutter_test:
