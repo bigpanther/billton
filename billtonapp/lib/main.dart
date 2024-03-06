@@ -1,6 +1,10 @@
 import 'package:billtonapp/google.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'dart:io';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,9 +87,10 @@ class ShreeshApp extends StatelessWidget {
     return MaterialApp(
       title: 'Welcome Screen',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromRGBO(255, 190, 152, 1)),
-        useMaterial3: true,
-      ),
+          colorScheme:
+              ColorScheme.fromSeed(seedColor: Color.fromRGBO(255, 190, 152, 1)),
+          useMaterial3: true,
+          fontFamily: "Schyler"),
       home: WelcomeScreen(),
     );
   }
@@ -137,7 +142,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).primaryColor, // Set background color
-        selectedItemColor: Theme.of(context).colorScheme.secondary, // Set selected item color
+        selectedItemColor:
+            Theme.of(context).colorScheme.secondary, // Set selected item color
         unselectedItemColor: Colors.black, // Set unselected item color
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -172,7 +178,20 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text('Home Screen'),
+      child: Column(
+        children: [
+          Text("Thanks for choosing billton.",
+              style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 20.0)),
+          Text("Let's get started!"),
+          Padding(
+            padding: EdgeInsets.fromLTRB(20, 100, 20, 0),
+            child: Image(image: AssetImage("assets/Welcome.png")),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -190,8 +209,69 @@ class AddPictureScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text('Add Picture Screen'),
-    );
+        child: Column(
+      children: [
+        ElevatedButton(
+          onPressed: () async {
+            File? imageFile = await getImageFromCamera();
+            if (imageFile != null) {
+              await uploadImageToFirebase(imageFile);
+            }
+          },
+          child: const Text('Take Picture & Upload'),
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            File? imageFile = await getImageFromGallery();
+            if (imageFile != null) {
+              await uploadImageToFirebase(imageFile);
+            }
+          },
+          child: const Text('Upload from Gallery'),
+        ),
+      ],
+    ));
+  }
+
+  Future<File?> getImageFromGallery() async {
+    final picker = ImagePicker();
+    final PickedFile? pickedFile =
+        await picker.getImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      return File(pickedFile.path);
+    } else {
+      return null;
+    }
+  }
+
+  Future<void> uploadImageToFirebase(File imageFile) async {
+    try {
+      print("uploading");
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child(
+              'files/${FirebaseAuth.instance.currentUser!.uid}/$fileName.jpg');
+      await ref.putFile(imageFile);
+      String imageUrl = await ref.getDownloadURL();
+      print('Image uploaded to Firebase: $imageUrl');
+    } catch (e) {
+      print('Error uploading image to Firebase: $e');
+    }
+  }
+
+  Future<File?> getImageFromCamera() async {
+    final picker = ImagePicker();
+    final PickedFile? pickedFile =
+        await picker.getImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      return File(pickedFile.path);
+    } else {
+      return null;
+    }
   }
 }
 
@@ -350,7 +430,7 @@ class ProfileScreen extends StatelessWidget {
 
 // class ShreeshApp extends StatelessWidget{
 //   const ShreeshApp({super.key});
-//   @override 
+//   @override
 //   Widget build(BuildContext context){
 //     return MaterialApp(
 //       title: 'Flutter Demo',
@@ -360,12 +440,11 @@ class ProfileScreen extends StatelessWidget {
 //       ),
 //       debugShowCheckedModeBanner: false,
 
-//       home:    
+//       home:
 //       Scaffold(
 //       appBar: AppBar(title: const Text('Google SignIn Screen')),
-//       body: 
-      
-        
+//       body:
+
 //       Column(
 //       mainAxisAlignment: MainAxisAlignment.start,
 //       crossAxisAlignment: CrossAxisAlignment.start,
@@ -386,7 +465,7 @@ class ProfileScreen extends StatelessWidget {
 //       )],
 //     ),),);
 //   }
-// } 
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
