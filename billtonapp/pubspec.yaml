@@ -37,6 +37,8 @@ dependencies:
   firebase_core: ^2.26.0
   firebase_auth: ^4.17.7
   google_sign_in: ^6.2.1
+  form_builder_validators: ^9.1.0
+  flutter_form_builder: ^9.2.1
   image_picker: ^0.8.9 # Add this line for image picking functionality
   firebase_storage: ^11.6.8 # Add this line for Firebase Storage functionality
 
