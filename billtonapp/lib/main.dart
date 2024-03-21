@@ -576,25 +576,29 @@ import 'dart:io';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   // await Firebase.initializeApp();
-  runApp(ShreeshApp());
+  runApp(const ShreeshApp());
 }
 
 class ShreeshApp extends StatelessWidget {
+  const ShreeshApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Welcome Screen',
       theme: ThemeData(
           colorScheme:
-              ColorScheme.fromSeed(seedColor: Color.fromRGBO(255, 190, 152, 1)),
+              ColorScheme.fromSeed(seedColor: const Color.fromRGBO(255, 190, 152, 1)),
           useMaterial3: true,
           fontFamily: "Schyler"),
-      home: WelcomeScreen(),
+      home: const WelcomeScreen(),
     );
   }
 }
 
 class WelcomeScreen extends StatefulWidget {
+  const WelcomeScreen({super.key});
+
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
@@ -603,12 +607,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   int _selectedIndex = 0;
   ValueNotifier<UserCredential?> userCredential = ValueNotifier(null);
 
-  static List<Widget> _widgetOptions = <Widget>[
-    HomeScreen(),
-    HistoryScreen(),
-    AddPictureScreen(),
-    SettingsScreen(),
-    ProfileScreen(),
+  static final List<Widget> _widgetOptions = <Widget>[
+    const HomeScreen(),
+    const HistoryScreen(),
+    const AddPictureScreen(),
+    const SettingsScreen(),
+    const ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -628,7 +632,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   backgroundImage:
                       NetworkImage(userCredential.value!.user!.photoURL!),
                 )
-              : Icon(Icons.login),
+              : const Icon(Icons.login),
           onPressed: () async {
             userCredential.value = await signInWithGoogle();
             if (userCredential.value != null) {
@@ -638,7 +642,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         ),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.notifications),
+            icon: const Icon(Icons.notifications),
             onPressed: () {
               // Navigate to notifications screen
             },
@@ -683,6 +687,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 }
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -693,8 +699,8 @@ class HomeScreen extends StatelessWidget {
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.w500,
                   fontSize: 20.0)),
-          Text("Let's get started!"),
-          Padding(
+          const Text("Let's get started!"),
+          const Padding(
             padding: EdgeInsets.fromLTRB(20, 100, 20, 0),
             child: Image(image: AssetImage("assets/Welcome.png")),
           ),
@@ -705,9 +711,11 @@ class HomeScreen extends StatelessWidget {
 }
 
 class HistoryScreen extends StatelessWidget {
+  const HistoryScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text('History Screen'),
     );
   }
@@ -744,6 +752,8 @@ Future<bool> signOutFromGoogle() async {
 }
 
 class AddPictureScreen extends StatelessWidget {
+  const AddPictureScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -821,18 +831,22 @@ class AddPictureScreen extends StatelessWidget {
 }
 
 class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text('Settings Screen'),
     );
   }
 }
 
 class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text('Profile Screen'),
     );
   }

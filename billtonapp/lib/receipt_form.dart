@@ -3,7 +3,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
 class ReceiptForm extends StatefulWidget {
-  const ReceiptForm({Key? key}) : super(key: key);
+  const ReceiptForm({super.key});
 
   @override
   State<ReceiptForm> createState() => _ReceiptFormState();

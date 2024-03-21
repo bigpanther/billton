@@ -132,7 +132,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class GoogleSignInScreen extends StatefulWidget {
-  const GoogleSignInScreen({Key? key}) : super(key: key);
+  const GoogleSignInScreen({super.key});
 
   @override
   State<GoogleSignInScreen> createState() => _GoogleSignInScreenState();
