@@ -5,8 +5,389 @@ import 'package:flutter/material.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   // await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(ShreeshApp());
 }
+// class ShreeshApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Welcome Screen',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//       ),
+//       home: WelcomeScreen(),
+//     );
+//   }
+// }
+
+// class WelcomeScreen extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Welcome'),
+//         actions: [
+//           IconButton(
+//             icon: Icon(Icons.login),
+//             onPressed: () {
+//               // Add your login button onPressed action here
+//             },
+//           ),
+//           IconButton(
+//             icon: Icon(Icons.notifications),
+//             onPressed: () {
+//               // Add your notification button onPressed action here
+//             },
+//           ),
+//         ],
+//       ),
+//       body: SafeArea(
+//         child: Center(
+//           child: Text('Welcome to the app!'),
+//         ),
+//       ),
+//       bottomNavigationBar: BottomNavigationBar(
+//         currentIndex: 0, // You can set this to any value to highlight a specific button
+//         items: [
+//           BottomNavigationBarItem(
+//             icon: Icon(Icons.home),
+//             label: 'Home',
+//           ),
+//           BottomNavigationBarItem(
+//             icon: Icon(Icons.history),
+//             label: 'History',
+//           ),
+//           BottomNavigationBarItem(
+//             icon: Icon(Icons.add),
+//             label: 'Add Picture',
+//           ),
+//           BottomNavigationBarItem(
+//             icon: Icon(Icons.settings),
+//             label: 'Settings',
+//           ),
+//           BottomNavigationBarItem(
+//             icon: Icon(Icons.person),
+//             label: 'Profile',
+//           ),
+//         ],
+//         onTap: (index) {
+//           // Add your bottom navigation button tap action here
+//         },
+//       ),
+//     );
+//   }
+// }
+class ShreeshApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Welcome Screen',
+      theme: ThemeData(
+        colorScheme:
+            ColorScheme.fromSeed(seedColor: Color.fromRGBO(255, 190, 152, 1)),
+        useMaterial3: true,
+      ),
+      home: WelcomeScreen(),
+    );
+  }
+}
+
+class WelcomeScreen extends StatefulWidget {
+  @override
+  _WelcomeScreenState createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  int _selectedIndex = 0;
+
+  static List<Widget> _widgetOptions = <Widget>[
+    HomeScreen(),
+    HistoryScreen(),
+    AddPictureScreen(),
+    SettingsScreen(),
+    ProfileScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.login),
+          onPressed: () {
+            // Navigate to login screen
+          },
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.notifications),
+            onPressed: () {
+              // Navigate to notifications screen
+            },
+          ),
+        ],
+      ),
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Theme.of(context).primaryColor, // Set background color
+        selectedItemColor:
+            Theme.of(context).colorScheme.secondary, // Set selected item color
+        unselectedItemColor: Colors.black, // Set unselected item color
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history),
+            label: 'History',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_a_photo),
+            label: 'Add Picture',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Home Screen'),
+    );
+  }
+}
+
+class HistoryScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('History Screen'),
+    );
+  }
+}
+
+class AddPictureScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Add Picture Screen'),
+    );
+  }
+}
+
+class SettingsScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Settings Screen'),
+    );
+  }
+}
+
+class ProfileScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Profile Screen'),
+    );
+  }
+}
+
+// class ShreeshApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Welcome Screen',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//       ),
+//       home: WelcomeScreen(),
+//     );
+//   }
+// }
+
+// class WelcomeScreen extends StatefulWidget {
+//   @override
+//   _WelcomeScreenState createState() => _WelcomeScreenState();
+// }
+
+// class _WelcomeScreenState extends State<WelcomeScreen> {
+//   int _selectedIndex = 0;
+
+//   static List<Widget> _widgetOptions = <Widget>[
+//     HomeScreen(),
+//     HistoryScreen(),
+//     AddPictureScreen(),
+//     SettingsScreen(),
+//     ProfileScreen(),
+//   ];
+
+//   void _onItemTapped(int index) {
+//     setState(() {
+//       _selectedIndex = index;
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Center(
+//         child: _widgetOptions.elementAt(_selectedIndex),
+//       ),
+//       appBar: AppBar(
+//         title: Text('Welcome'),
+//         actions: <Widget>[
+//           IconButton(
+//             icon: Icon(Icons.notifications),
+//             onPressed: () {
+//               // Navigate to notifications screen
+//             },
+//           ),
+//         ],
+//       ),
+//       bottomNavigationBar: BottomNavigationBar(
+//         items: const <BottomNavigationBarItem>[
+//           BottomNavigationBarItem(
+//             icon: Icon(Icons.home),
+//             label: 'Home',
+//           ),
+//           BottomNavigationBarItem(
+//             icon: Icon(Icons.history),
+//             label: 'History',
+//           ),
+//           BottomNavigationBarItem(
+//             icon: Icon(Icons.add_a_photo),
+//             label: 'Add Picture',
+//           ),
+//           BottomNavigationBarItem(
+//             icon: Icon(Icons.settings),
+//             label: 'Settings',
+//           ),
+//           BottomNavigationBarItem(
+//             icon: Icon(Icons.person),
+//             label: 'Profile',
+//           ),
+//         ],
+//         currentIndex: _selectedIndex,
+//         onTap: _onItemTapped,
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         onPressed: () {
+//           // Navigate to sign in screen
+//         },
+//         tooltip: 'Sign In',
+//         child: Icon(Icons.login),
+//       ),
+//       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+//     );
+//   }
+// }
+
+// class HomeScreen extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Text('Home Screen'),
+//     );
+//   }
+// }
+
+// class HistoryScreen extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Text('History Screen'),
+//     );
+//   }
+// }
+
+// class AddPictureScreen extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Text('Add Picture Screen'),
+//     );
+//   }
+// }
+
+// class SettingsScreen extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Text('Settings Screen'),
+//     );
+//   }
+// }
+
+// class ProfileScreen extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Text('Profile Screen'),
+//     );
+//   }
+// }
+
+// class ShreeshApp extends StatelessWidget{
+//   const ShreeshApp({super.key});
+//   @override
+//   Widget build(BuildContext context){
+//     return MaterialApp(
+//       title: 'Flutter Demo',
+//       theme: ThemeData(
+//         colorScheme: ColorScheme.fromSeed(seedColor: Color.fromRGBO(255, 190, 152, 1)),
+//         useMaterial3: true,
+//       ),
+//       debugShowCheckedModeBanner: false,
+
+//       home:
+//       Scaffold(
+//       appBar: AppBar(title: const Text('Google SignIn Screen')),
+//       body:
+
+//       Column(
+//       mainAxisAlignment: MainAxisAlignment.start,
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [Padding(
+//         padding: EdgeInsets.fromLTRB(0,100,0,0),
+//         child: Text(
+//           "Bye"
+//         ),
+
+//       ),
+//       FloatingActionButton(onPressed: () { print("a"); },
+//       child: Text("A"),),
+//       Text(
+//         "Big Panther"
+//       ),
+//       Text(
+//         "Abc"
+//       )],
+//     ),),);
+//   }
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -126,5 +507,73 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  Future<UserCredential?> signInWithGoogle() async {
+    await Firebase.initializeApp();
+
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+
+      return await FirebaseAuth.instance.signInWithCredential(credential);
+    } on Exception catch (e) {
+      print('Exception->$e');
+      return null;
+    }
+  }
+
+  Future<bool> signOutFromGoogle() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      return true;
+    } on Exception catch (_) {
+      return false;
+    }
+  }
+
+  Future<File?> getImageFromCamera() async {
+    final picker = ImagePicker();
+    final PickedFile? pickedFile =
+        await picker.getImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      return File(pickedFile.path);
+    } else {
+      return null;
+    }
+  }
+
+  Future<File?> getImageFromGallery() async {
+    final picker = ImagePicker();
+    final PickedFile? pickedFile =
+        await picker.getImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      return File(pickedFile.path);
+    } else {
+      return null;
+    }
+  }
+
+  Future<void> uploadImageToFirebase(File imageFile) async {
+    try {
+      print("uploading");
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child(
+              'files/${FirebaseAuth.instance.currentUser!.uid}/$fileName.jpg');
+      await ref.putFile(imageFile);
+      String imageUrl = await ref.getDownloadURL();
+      print('Image uploaded to Firebase: $imageUrl');
+    } catch (e) {
+      print('Error uploading image to Firebase: $e');
+    }
   }
 }

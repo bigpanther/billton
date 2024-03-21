@@ -6,6 +6,12 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Your message here describing why you need access to the camera</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Your message here describing why you need access to save photos to the photo library</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Your message here describing why you need access to the photo library</string>
 	<key>CFBundleDisplayName</key>
 	<string>Billtonapp</string>
 	<key>CFBundleExecutable</key>
