@@ -564,7 +564,7 @@
 //   }
 // }
 import 'package:billtonapp/google.dart';
-import 'package:billtonapp/sign_up.dart';
+import 'package:billtonapp/receipt_form.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -773,9 +773,9 @@ class AddPictureScreen extends StatelessWidget {
         const SizedBox(
           height: 20,
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-          child: SignupForm(),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: ReceiptForm(),
         ),
       ],
     ));
@@ -783,8 +783,8 @@ class AddPictureScreen extends StatelessWidget {
 
   Future<File?> getImageFromGallery() async {
     final picker = ImagePicker();
-    final PickedFile? pickedFile =
-        await picker.getImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       return File(pickedFile.path);
     } else {

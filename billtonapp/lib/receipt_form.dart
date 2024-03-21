@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
-class SignupForm extends StatefulWidget {
-  const SignupForm({Key? key}) : super(key: key);
+class ReceiptForm extends StatefulWidget {
+  const ReceiptForm({Key? key}) : super(key: key);
 
   @override
-  State<SignupForm> createState() => _SignupFormState();
+  State<ReceiptForm> createState() => _ReceiptFormState();
 }
 
-class _SignupFormState extends State<SignupForm> {
+class _ReceiptFormState extends State<ReceiptForm> {
   final _formKey = GlobalKey<FormBuilderState>();
   final _emailFieldKey = GlobalKey<FormBuilderFieldState>();
 
