@@ -11,11 +11,11 @@ import 'dart:io';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ShreeshApp());
+  runApp(const BilltonApp());
 }
 
-class ShreeshApp extends StatelessWidget {
-  const ShreeshApp({super.key});
+class BilltonApp extends StatelessWidget {
+  const BilltonApp({super.key});
 
   @override
   Widget build(BuildContext context) {
