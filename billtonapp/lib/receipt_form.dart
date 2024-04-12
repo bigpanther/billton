@@ -21,8 +21,8 @@ class _ReceiptFormState extends State<ReceiptForm> {
         child: Column(
           children: [
             FormBuilderTextField(
-              name: 'full_name',
-              decoration: const InputDecoration(labelText: 'Full Name'),
+              name: 'Store_name',
+              decoration: const InputDecoration(labelText: 'Store Name'),
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(),
               ]),
@@ -30,63 +30,40 @@ class _ReceiptFormState extends State<ReceiptForm> {
             const SizedBox(height: 10),
             FormBuilderTextField(
               key: _emailFieldKey,
-              name: 'email',
-              decoration: const InputDecoration(labelText: 'Email'),
+              name: 'brand_name',
+              decoration: const InputDecoration(labelText: 'Brand Name'),
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(),
                 FormBuilderValidators.email(),
               ]),
             ),
             const SizedBox(height: 10),
-            FormBuilderTextField(
-              name: 'password',
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-              validator: FormBuilderValidators.compose([
-                FormBuilderValidators.required(),
-                FormBuilderValidators.minLength(6),
-              ]),
-            ),
-            const SizedBox(height: 10),
-            FormBuilderTextField(
-              name: 'confirm_password',
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              decoration: InputDecoration(
-                labelText: 'Confirm Password',
-                suffixIcon: (_formKey.currentState?.fields['confirm_password']
-                            ?.hasError ??
-                        false)
-                    ? const Icon(Icons.error, color: Colors.red)
-                    : const Icon(Icons.check, color: Colors.green),
-              ),
-              obscureText: true,
-              validator: (value) =>
-                  _formKey.currentState?.fields['password']?.value != value
-                      ? 'No coinciden'
-                      : null,
-            ),
-            const SizedBox(height: 10),
-            FormBuilderFieldDecoration<bool>(
-              name: 'test',
-              validator: FormBuilderValidators.compose([
-                FormBuilderValidators.required(),
-                FormBuilderValidators.equal(true),
-              ]),
-              // initialValue: true,
-              decoration: const InputDecoration(labelText: 'Accept Terms?'),
-              builder: (FormFieldState<bool?> field) {
-                return InputDecorator(
-                  decoration: InputDecoration(
-                    errorText: field.errorText,
-                  ),
-                  child: SwitchListTile(
-                    title: const Text(
-                        'I have read and accept the terms of service.'),
-                    onChanged: field.didChange,
-                    value: field.value ?? false,
-                  ),
-                );
+            FormBuilderDateTimePicker(
+              name: 'transaction_time',
+              decoration: InputDecoration(labelText: 'Transaction Time'),
+              initialValue: DateTime.now(), // Initial value (optional)
+              onChanged: (value) {
+                print(value);
               },
+            ),
+            const SizedBox(height: 10),
+            FormBuilderDateTimePicker(
+              name: 'expiry_date',
+              inputType: InputType.date,
+              decoration: InputDecoration(labelText: 'Expiry Date'),
+              initialValue: DateTime.now(), // Initial value (optional)
+              onChanged: (value) {
+                // Handle the selected expiry date
+                print(value);
+              },
+            ),
+            const SizedBox(height: 10),
+            FormBuilderTextField(
+              name: 'amount',
+              decoration: const InputDecoration(labelText: 'Amount (CAD)'),
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.required(),
+              ]),
             ),
             const SizedBox(height: 10),
             MaterialButton(
@@ -103,8 +80,8 @@ class _ReceiptFormState extends State<ReceiptForm> {
                 }
                 debugPrint(_formKey.currentState?.value.toString());
               },
-              child:
-                  const Text('Signup', style: TextStyle(color: Colors.white)),
+              child: const Text('Add Receipt',
+                  style: TextStyle(color: Colors.white)),
             )
           ],
         ),
