@@ -45,8 +45,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   static final List<Widget> _widgetOptions = <Widget>[
     const HomeScreen(),
-    const HistoryScreen(),
-    const AddPictureScreen(),
+    const Dashboard(),
+    const AddReceiptScreen(),
     const SettingsScreen(),
     const ProfileScreen(),
   ];
@@ -89,7 +89,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.notifications),
+                icon: const Icon(Icons.notifications), color:Theme.of(context).colorScheme.secondary ,
                 onPressed: () {
                   // Navigate to notifications screen
                 },
@@ -131,21 +131,21 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).primaryColor, // Set background color
-        selectedItemColor:
+        unselectedItemColor:
             Theme.of(context).colorScheme.secondary, // Set selected item color
-        unselectedItemColor: Colors.black, // Set unselected item color
+        selectedItemColor: Colors.black, // Set unselected item color
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'History',
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_a_photo),
-            label: 'Add Picture',
+            label: 'Add Receipt',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
@@ -207,7 +207,7 @@ class HomeScreen extends StatelessWidget {
                     Navigator.push(
                       // ignore: use_build_context_synchronously
                       context,
-                      MaterialPageRoute(builder: (context) => const AddPictureScreen()), // Replace NextScreen with your actual next screen
+                      MaterialPageRoute(builder: (context) => const AddReceiptScreen()), // Replace NextScreen with your actual next screen
                     );
                   } else {
                     // Login failed or was cancelled, handle accordingly
@@ -230,13 +230,13 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-class HistoryScreen extends StatelessWidget {
-  const HistoryScreen({super.key});
+class Dashboard extends StatelessWidget {
+  const Dashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('History Screen'),
+      child: Text('Dashboard'),
     );
   }
 }
@@ -271,8 +271,8 @@ Future<bool> signOutFromGoogle() async {
   }
 }
 
-class AddPictureScreen extends StatelessWidget {
-  const AddPictureScreen({super.key});
+class AddReceiptScreen extends StatelessWidget {
+  const AddReceiptScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
