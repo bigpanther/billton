@@ -123,3 +123,36 @@ type User struct {
 }
 
 ```
+To use WarranT app, follow these steps:
+
+1. Clone the following repository to your local machine using the following code.
+```
+git clone https://github.com/bigpanther/billton.git
+```
+2. Ensure you have Flutter installed on your system.
+3. Run `flutter pub get` to install dependencies.
+4. Ensure to open simualator when testing the app on your computer
+5. Run the app using `flutter run`.
+
+## Dependencies
+
+The WarranT app uses the following dependencies:
+  - cupertino_icons: ^1.0.2
+  - firebase_core: ^2.26.0
+  - firebase_auth: ^4.17.7
+  - google_sign_in: ^6.2.1
+  - form_builder_validators: ^9.1.0
+  - flutter_form_builder: ^9.2.1
+  - image_picker: ^0.8.9 
+  - firebase_storage: ^11.6.8
+
+## Contributing
+
+Contributions are welcome! If you encounter any bugs or have suggestions for new features, feel free to open an issue or submit a pull request.
+
+## Contact
+
+If you have any questions or need further assistance, you can contact the developer:
+
+Harsimran Singh Maan at harsimran.maan@indcan.org
+
