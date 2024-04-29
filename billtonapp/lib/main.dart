@@ -23,9 +23,9 @@ class BilltonApp extends StatelessWidget {
       title: 'Welcome Screen',
       theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromRGBO(255, 190, 152, 1)),
+              seedColor: const Color(0xFF388E3C),),
           useMaterial3: true,
-          fontFamily: "Schyler"),
+          fontFamily: "PlayfairDisplay-VariableFont_wght"),
       home: const WelcomeScreen(),
     );
   }
@@ -35,6 +35,7 @@ class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
@@ -44,8 +45,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   static final List<Widget> _widgetOptions = <Widget>[
     const HomeScreen(),
-    const HistoryScreen(),
-    const AddPictureScreen(),
+    const Dashboard(),
+    const AddReceiptScreen(),
     const SettingsScreen(),
     const ProfileScreen(),
   ];
@@ -59,51 +60,92 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: userCredential.value != null
-              ? CircleAvatar(
-                  radius: 20, // Adjust the radius as needed
-                  backgroundImage:
-                      NetworkImage(userCredential.value!.user!.photoURL!),
-                )
-              : const Icon(Icons.login),
-          onPressed: () async {
-            userCredential.value = await signInWithGoogle();
-            if (userCredential.value != null) {
-              print(userCredential.value!.user!.email);
-            }
-          },
+     appBar: AppBar(
+     
+     // toolbarHeight: 60,
+        leading:   Row(
+          children: [
+            Image.asset(
+              'assets/logo.png',
+              width: 50,
+              height: 50,
+            ),
+            const SizedBox(width: 4),
+          ],),
+          title: const Center(
+            child: Text(
+                "BillTon",
+              style: TextStyle(
+                color: Color(0xFF388E3C), // Adjust the text color to make it visible
+                fontWeight: FontWeight.bold,
+                fontSize: 25.0,
+              ),
+            ),
+          
         ),
+
+
         actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.notifications),
-            onPressed: () {
-              // Navigate to notifications screen
-            },
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications), color:Theme.of(context).colorScheme.secondary ,
+                onPressed: () {
+                  // Navigate to notifications screen
+                },
+              ),
+              IconButton(
+                icon: userCredential.value != null
+                    ? CircleAvatar(
+                        radius: 20, // Adjust the radius as needed
+                        backgroundImage: NetworkImage(userCredential.value!.user!.photoURL!),
+                      )
+                    : const Icon(Icons.login),
+                onPressed: () async {
+                  userCredential.value = await signInWithGoogle();
+                  if (userCredential.value != null) {
+                    print(userCredential.value!.user!.email);
+                  }
+                },
+              ),
+              
+            ],
           ),
         ],
       ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+
+       body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/welcome_background.png"), // Your background image
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Center(
+            child: _widgetOptions.elementAt(_selectedIndex),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).primaryColor, // Set background color
-        selectedItemColor:
+        unselectedItemColor:
             Theme.of(context).colorScheme.secondary, // Set selected item color
-        unselectedItemColor: Colors.black, // Set unselected item color
+        selectedItemColor: Colors.black, // Set unselected item color
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'History',
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_a_photo),
-            label: 'Add Picture',
+            label: 'Add Receipt',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
@@ -121,6 +163,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 }
 
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -129,29 +172,71 @@ class HomeScreen extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          Text("Thanks for choosing Billton.",
-              style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 20.0)),
-          const Text("Let's get started!"),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(20, 100, 20, 0),
-            child: Image(image: AssetImage("assets/Welcome.png")),
+          Padding(padding:const EdgeInsets.only(top: 80.0),
+                  child:Text("Warranty in your pocket",
+                    style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                   
+                    fontSize: 30.0,
+                    fontStyle: FontStyle.italic,
+                    fontFamily: "PlayfairDisplay-Italic-VariableFont_wght",)),
           ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
+            child: Image(image: AssetImage("assets/welcome 2.png")),
+          ),
+          const     Text("Welcome,",
+                    style: TextStyle(
+                    color: Color(0xFF388E3C),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30.0,
+                    fontFamily: "PlayfairDisplay-Italic-VariableFont_wght",)),
+          const     Text("please sign in.",
+                    style: TextStyle(
+                    color: Color(0xFF388E3C),
+                    fontSize: 20.0,
+                    fontFamily: "PlayfairDisplay-Italic-VariableFont_wght",)),
+          const SizedBox(height: 20),
+          MaterialButton(
+                onPressed: () async {
+                  UserCredential? userCredential = await signInWithGoogle();
+                  if (userCredential != null) {
+                    // Assuming you want to do something with the email or navigate after login
+                    print(userCredential.user!.email);  // Debug: Print email to console
+                    // You might want to navigate to a new screen or update state here
+                    Navigator.push(
+                      // ignore: use_build_context_synchronously
+                      context,
+                      MaterialPageRoute(builder: (context) => const AddReceiptScreen()), // Replace NextScreen with your actual next screen
+                    );
+                  } else {
+                    // Login failed or was cancelled, handle accordingly
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Login failed, please try again."))
+                    );
+                  }
+                },
+                color: Theme.of(context).colorScheme.secondary,
+                padding: EdgeInsets.zero,
+                child: Image.asset(
+                  'assets/GoogleSignUp.png', // Ensure this path is correct
+                  height: 40.0,
+                ),
+              ),
+
         ],
       ),
     );
   }
 }
-
-class HistoryScreen extends StatelessWidget {
-  const HistoryScreen({super.key});
+class Dashboard extends StatelessWidget {
+  const Dashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('History Screen'),
+      child: Text('Dashboard'),
     );
   }
 }
@@ -186,8 +271,8 @@ Future<bool> signOutFromGoogle() async {
   }
 }
 
-class AddPictureScreen extends StatelessWidget {
-  const AddPictureScreen({super.key});
+class AddReceiptScreen extends StatelessWidget {
+  const AddReceiptScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
